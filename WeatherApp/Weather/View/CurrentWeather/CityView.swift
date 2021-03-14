@@ -1,46 +1,126 @@
 //
-//  CityCurrentWeatherView.swift
+//  CurrentWeatherDetailsView.swift
 //  WeatherApp
 //
-//  Created by Vsevolod Pavlovskyi on 12.03.2021.
+//  Created by Vsevolod Pavlovskyi on 14.03.2021.
 //
 
 import SwiftUI
 
 struct CityView: View {
     
-    @ObservedObject
-    var viewModel: CityCurrentWeatherViewModel
-    
-    let city: String
-    
-    init(city: String) {
-        self.city = city
-        viewModel = CityCurrentWeatherViewModel(city: city)
-    }
-    
+    var currentWeather: CityCurrentWeather
+
     var body: some View {
         content
-            .onAppear(perform: viewModel.fetchWeather)
-            .listStyle(GroupedListStyle())
     }
 
 }
 
 private extension CityView {
     
-    var content: some View {
-        CurrentWeatherDetailsView(from: viewModel.currentWeather)
-            .redacted(reason: viewModel.currentWeather == nil ? .placeholder : [])
-    }
+    var cityText: some View {
 
+        let cityText = currentWeather.cityName
+
+        return Text(cityText)
+            .font(.title3)
+    }
+    
+    var icon: some View {
+        Image(systemName: "cloud.rain.fill")
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .frame(height: 25)
+    }
+    
+    var header: some View {
+        HStack() {
+            cityText
+            Spacer()
+            icon
+        }
+    }
+    
+    var temperatureText: some View {
+
+        let temperature = Int(currentWeather.weather?.currentTemperature ?? 0)
+
+        return Text("\(temperature)°")
+            .font(.system(size: 40, weight: .medium, design: .rounded))
+    }
+    
+    var weatherDescription: some View {
+
+        let desription = currentWeather.weather?.description ?? "Desc"
+        
+        return Text(desription)
+    }
+    
+    var highestTemperatureText: some View {
+        
+        let highestTemperature = Int(currentWeather.weather?.highestTemperature ?? 0)
+        
+        return Text("H:\(highestTemperature)°")
+    }
+    
+    var lowestTemperatureText: some View {
+        
+        let lowestTemperature = Int(currentWeather.weather?.lowestTemperature ?? 0)
+        
+        return Text("L:\(lowestTemperature)")
+    }
+    
+    var boundaryTemperatures: some View {
+        HStack(spacing: 3) {
+            highestTemperatureText
+            lowestTemperatureText
+        }
+        .font(.subheadline)
+        .allowsTightening(true)
+        .minimumScaleFactor(0.7)
+    }
+    
+    var description: some View {
+        VStack(alignment: .trailing) {
+            weatherDescription
+            boundaryTemperatures
+        }
+    }
+    
+    var footer: some View {
+        HStack() {
+            temperatureText
+            Spacer()
+            description
+        }
+    }
+    
+    var content: some View {
+        VStack(spacing: -5) {
+            header
+            Spacer()
+            footer
+        }
+        .foregroundColor(.white)
+        .padding(20)
+        .background(Color.blue)
+        .cornerRadius(10)
+        .animation(.easeInOut)
+    }
+    
 }
 
-struct CurrentWeatherView_Previews: PreviewProvider {
+struct CurrentWeatherDetailsView_Previews: PreviewProvider {
+    
+    static var currentWeatherMock = CityCurrentWeather(cityName: "Kyiv")
     
     static var previews: some View {
-        CityView(city: "Kyiv")
+        CityView(currentWeather: currentWeatherMock)
+            .frame(width: 200, height: 100, alignment: .center)
+        
+        CityView(currentWeather: currentWeatherMock)
+            .redacted(reason: .placeholder)
             .frame(width: 200, height: 100, alignment: .center)
     }
-
 }

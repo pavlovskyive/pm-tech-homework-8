@@ -11,7 +11,7 @@ struct ContentView: View {
     
     var body: some View {
         NavigationView {
-            CitiesView()
+            CitiesView(cities: ["Kyiv", "Dnipro", "London"])
         }
     }
 }

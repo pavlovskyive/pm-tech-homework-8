@@ -20,7 +20,7 @@ final class WeatherService {
 
 extension WeatherService {
 
-    func currentWeather(for city: String) -> AnyPublisher<СityCurrentWeather, WeatherError> {
+    func currentWeather(for city: String) -> AnyPublisher<CurrentWeatherResponse, WeatherError> {
         return fetch(with: makeCurrentWeatherComponents(for: city))
     }
 
