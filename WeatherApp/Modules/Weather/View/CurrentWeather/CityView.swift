@@ -106,11 +106,13 @@ private extension CityView {
             Spacer()
             footer
         }
+        // UI
         .foregroundColor(.white)
         .padding(20)
         .background(Color.blue)
         .cornerRadius(10)
         .animation(nil)
+        // Appearing animation
         .opacity(redactionReasons == .placeholder ? 0.7 : 1)
         .animation(.easeInOut)
     }

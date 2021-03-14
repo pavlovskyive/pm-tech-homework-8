@@ -10,13 +10,13 @@ import SwiftUI
 struct CitiesView: View {
     
     @ObservedObject
-    var viewModel: CitiesViewModel
+    private var viewModel = CitiesViewModel()
     
-    let cities = ["Kyiv", "Dnipro", "London"]
+    @ObservedObject
+    private var userSetting = UserSettings()
     
-    init(cities: [String]) {
-        viewModel = CitiesViewModel(cities: cities)
-    }
+    @State
+    private var isAddingCity = false
     
     var body: some View {
         content
@@ -27,6 +27,10 @@ struct CitiesView: View {
 
 private extension CitiesView {
     
+    func fetchWeather() {
+        viewModel.fetchCurrentWeather(for: userSetting.cities)
+    }
+    
     var content: some View {
         ScrollView(.vertical) {
             grid
@@ -34,17 +38,22 @@ private extension CitiesView {
         .padding(.top, 1)
         .navigationBarItems(leading: refreshButton,
                             trailing: addCityButton)
+        .sheet(isPresented: $isAddingCity, onDismiss: {
+            fetchWeather()
+        }) {
+            AddCityView(userSettings: userSetting)
+        }
     }
     
     var refreshButton: some View {
         Button("Refresh") {
-            viewModel.fetchWeathers()
+            fetchWeather()
         }
     }
     
     var addCityButton: some View {
         Button(action: {
-            print("Add city tapped")
+            isAddingCity.toggle()
         }) {
             HStack(spacing: 1) {
                 Image(systemName: "plus")
@@ -59,7 +68,7 @@ private extension CitiesView {
                 makeCityView($0)
             }
         }
-        .onAppear(perform: viewModel.fetchWeathers)
+        .onAppear(perform: fetchWeather)
         .padding()
     }
     
@@ -76,6 +85,6 @@ private extension CitiesView {
 
 struct CitiesCurrentWeather_Previews: PreviewProvider {
     static var previews: some View {
-        CitiesView(cities: ["Kyiv", "Dnipro", "London"])
+        CitiesView()
     }
 }

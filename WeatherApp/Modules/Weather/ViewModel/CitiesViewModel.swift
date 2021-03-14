@@ -13,19 +13,12 @@ class CitiesViewModel: ObservableObject {
     @Published
     var currentWeather = [CityCurrentWeather]()
     
-    private let cities: [String]
-    
     private let weatherService = WeatherService()
     private var disposables = Set<AnyCancellable>()
     
-    init(cities: [String]) {
-        self.cities = cities
-        resetCurrentWeather()
-    }
-    
-    func fetchWeathers() {
+    func fetchCurrentWeather(for cities: [String]) {
         
-        resetCurrentWeather()
+        resetCurrentWeather(to: cities)
         
         Publishers.MergeMany(cities.map(weatherService.currentWeather(for:)))
             .receive(on: RunLoop.main)
@@ -61,7 +54,7 @@ class CitiesViewModel: ObservableObject {
 
 private extension CitiesViewModel {
     
-    func resetCurrentWeather() {
+    func resetCurrentWeather(to cities: [String]) {
         currentWeather = cities.map {
             CityCurrentWeather(cityName: $0)
         }
