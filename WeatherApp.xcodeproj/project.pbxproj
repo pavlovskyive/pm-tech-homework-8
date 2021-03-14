@@ -53,6 +53,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		796BD8FF25FE800500A82CA9 /* Modules */ = {
+			isa = PBXGroup;
+			children = (
+				79BD422225FBEEB40029FE7D /* Weather */,
+			);
+			path = Modules;
+			sourceTree = "<group>";
+		};
 		79A4401625FE147000A64CB4 /* CurrentWeather */ = {
 			isa = PBXGroup;
 			children = (
@@ -125,7 +133,7 @@
 			children = (
 				79BD420B25FBEDD60029FE7D /* AppDelegate.swift */,
 				79BD420D25FBEDD60029FE7D /* SceneDelegate.swift */,
-				79BD422225FBEEB40029FE7D /* Weather */,
+				796BD8FF25FE800500A82CA9 /* Modules */,
 				79BD421125FBEDDA0029FE7D /* Assets.xcassets */,
 				79BD421625FBEDDA0029FE7D /* LaunchScreen.storyboard */,
 				79BD421925FBEDDA0029FE7D /* Info.plist */,

@@ -9,6 +9,8 @@ import SwiftUI
 
 struct CityView: View {
     
+    @Environment(\.redactionReasons) var redactionReasons
+
     var currentWeather: CityCurrentWeather
 
     var body: some View {
@@ -25,6 +27,7 @@ private extension CityView {
 
         return Text(cityText)
             .font(.title3)
+            .unredacted()
     }
     
     var icon: some View {
@@ -97,6 +100,7 @@ private extension CityView {
     }
     
     var content: some View {
+
         VStack(spacing: -5) {
             header
             Spacer()
@@ -106,6 +110,8 @@ private extension CityView {
         .padding(20)
         .background(Color.blue)
         .cornerRadius(10)
+        .animation(nil)
+        .opacity(redactionReasons == .placeholder ? 0.7 : 1)
         .animation(.easeInOut)
     }
     
@@ -116,8 +122,10 @@ struct CurrentWeatherDetailsView_Previews: PreviewProvider {
     static var currentWeatherMock = CityCurrentWeather(cityName: "Kyiv")
     
     static var previews: some View {
+        
         CityView(currentWeather: currentWeatherMock)
             .frame(width: 200, height: 100, alignment: .center)
+            .redacted(reason: [])
         
         CityView(currentWeather: currentWeatherMock)
             .redacted(reason: .placeholder)
