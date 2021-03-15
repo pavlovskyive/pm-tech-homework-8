@@ -9,36 +9,38 @@ import Foundation
 import Combine
 
 class AddCityViewModel: ObservableObject {
-    
+
     @Published
-    var currentWeather = CityCurrentWeather(cityName: "")
+    var currentWeather: CurrentWeather?
 
     @Published
     var cityName: String = ""
-    
+
     private var cancellable = Set<AnyCancellable>()
-    
+
     init() {
         let scheduler = DispatchQueue(label: "AddCityViewModel")
-        
+
         $cityName
-            .sink {
-                self.currentWeather = .init(cityName: $0)
-            }
+            .receive(on: RunLoop.main)
+            .sink(receiveValue: {_ in self.clearCurrentWeather() })
             .store(in: &cancellable)
-        
+
         $cityName
             .dropFirst(1)
             .debounce(for: .seconds(1), scheduler: scheduler)
+            .receive(on: RunLoop.main)
             .sink(receiveValue: checkCity(_:))
             .store(in: &cancellable)
     }
-    
+
     private var weatherService = WeatherService()
     private var disposables = Set<AnyCancellable>()
-    
+
     func checkCity(_ cityName: String) {
-        
+
+        currentWeather = nil
+
         weatherService.currentWeather(for: cityName)
             .receive(on: RunLoop.main)
             .sink(receiveCompletion: { result in
@@ -47,14 +49,19 @@ class AddCityViewModel: ObservableObject {
                     print(error)
                 default: break
                 }
-            }) { [weak self] currentWeatherResponce in
-                
+            }, receiveValue: { [weak self] currentWeatherResponce in
                 guard let self = self else {
                     return
                 }
-                
+
                 print(currentWeatherResponce)
-                self.currentWeather.configure(with: currentWeatherResponce)
-            }.store(in: &disposables)
+                self.currentWeather = .init(from: currentWeatherResponce)
+            }).store(in: &disposables)
+    }
+}
+
+private extension AddCityViewModel {
+    func clearCurrentWeather() {
+        currentWeather = nil
     }
 }

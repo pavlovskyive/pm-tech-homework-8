@@ -12,6 +12,9 @@ class UserSettings: ObservableObject {
 
     @Published
     private(set) var cities: [String] {
+        willSet {
+            objectWillChange.send()
+        }
         didSet {
             UserDefaults.standard.setValue(cities, forKey: "cities")
         }
@@ -23,7 +26,7 @@ class UserSettings: ObservableObject {
 }
 
 extension UserSettings {
-    
+
     public func addCity(cityName: String) {
         if !cities
             .map({ $0.lowercased() })
@@ -32,10 +35,10 @@ extension UserSettings {
             cities.append(cityName)
         }
     }
-    
+
     public func deleteCity(cityName: String) {
         cities
-            .removeAll{ $0 == cityName }
+            .removeAll { $0 == cityName }
     }
-    
+
 }

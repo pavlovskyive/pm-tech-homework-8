@@ -7,6 +7,7 @@
 
 import Foundation
 
+// swiftlint:disable nesting
 struct CurrentWeatherResponse: Decodable {
 
     let weather: [Weather]
@@ -18,7 +19,7 @@ struct CurrentWeatherResponse: Decodable {
         case main
         case city = "name"
     }
-    
+
     struct Weather: Codable {
 
         let description: String
@@ -44,4 +45,4 @@ struct CurrentWeatherResponse: Decodable {
     }
 
 }
-
+// swiftlint:enable nesting

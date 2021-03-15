@@ -7,51 +7,33 @@
 
 import SwiftUI
 
-struct CityCurrentWeather: Identifiable {
-    
-    let id = UUID()
-    
-    var cityName: String
-    var weather: CurrentWeather?
-    
-    init(cityName: String) {
-        self.cityName = cityName
-    }
-    
-    struct CurrentWeather {
+struct CurrentWeather {
 
-        let currentTemperature: Int
-        let highestTemperature: Int
-        let lowestTemperature: Int
-        
-        let description: String
-        let icon: Image
-        
-        init(currentWeather: CurrentWeatherResponse) {
+    let city: String
 
-            self.currentTemperature = Int(currentWeather.main.temperature)
-            self.highestTemperature = Int(currentWeather.main.highestTemperature)
-            self.lowestTemperature = Int(currentWeather.main.lowestTemperature)
-            
-            guard let weatherDescription = currentWeather.weather.first else {
-                self.description = ""
-                self.icon = .init(systemName: "sun.max")
-                
-                return
-            }
-            
-            self.description = weatherDescription.description
+    let currentTemperature: Int
+    let highestTemperature: Int
+    let lowestTemperature: Int
+
+    let description: String
+    let icon: Image
+
+    init(from currentWeather: CurrentWeatherResponse) {
+
+        self.city = currentWeather.city
+
+        self.currentTemperature = Int(currentWeather.main.temperature)
+        self.highestTemperature = Int(currentWeather.main.highestTemperature)
+        self.lowestTemperature = Int(currentWeather.main.lowestTemperature)
+
+        guard let weatherDescription = currentWeather.weather.first else {
+            self.description = ""
             self.icon = .init(systemName: "sun.max")
+
+            return
         }
-    }
 
-}
-
-extension CityCurrentWeather {
-    
-    mutating func configure(with currentWeather: CurrentWeatherResponse) {
-        self.cityName = currentWeather.city
-        self.weather = .init(currentWeather: currentWeather)
+        self.description = weatherDescription.description
+        self.icon = .init(systemName: "sun.max")
     }
-    
 }
