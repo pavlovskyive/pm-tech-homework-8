@@ -11,7 +11,7 @@ import Combine
 class UserSettings: ObservableObject {
 
     @Published
-    var cities: [String] {
+    private(set) var cities: [String] {
         didSet {
             UserDefaults.standard.setValue(cities, forKey: "cities")
         }
@@ -20,4 +20,22 @@ class UserSettings: ObservableObject {
     init() {
         cities = UserDefaults.standard.object(forKey: "cities") as? [String] ?? ["Kyiv", "Dnipro"]
     }
+}
+
+extension UserSettings {
+    
+    public func addCity(cityName: String) {
+        if !cities
+            .map({ $0.lowercased() })
+            .contains(cityName.lowercased()) {
+
+            cities.append(cityName)
+        }
+    }
+    
+    public func deleteCity(cityName: String) {
+        cities
+            .removeAll{ $0 == cityName }
+    }
+    
 }

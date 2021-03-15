@@ -10,13 +10,20 @@ import SwiftUI
 struct CitiesView: View {
     
     @ObservedObject
-    private var viewModel = CitiesViewModel()
+    private var viewModel: CitiesViewModel
     
     @ObservedObject
-    private var userSetting = UserSettings()
+    private var userSettings: UserSettings
     
     @State
     private var isAddingCity = false
+    
+    init() {
+        let userSettings = UserSettings()
+        
+        viewModel = .init(userSettings: userSettings)
+        self.userSettings = userSettings
+    }
     
     var body: some View {
         content
@@ -26,11 +33,7 @@ struct CitiesView: View {
 }
 
 private extension CitiesView {
-    
-    func fetchWeather() {
-        viewModel.fetchCurrentWeather(for: userSetting.cities)
-    }
-    
+
     var content: some View {
         ScrollView(.vertical) {
             grid
@@ -38,16 +41,14 @@ private extension CitiesView {
         .padding(.top, 1)
         .navigationBarItems(leading: refreshButton,
                             trailing: addCityButton)
-        .sheet(isPresented: $isAddingCity, onDismiss: {
-            fetchWeather()
-        }) {
-            AddCityView(userSettings: userSetting)
+        .sheet(isPresented: $isAddingCity) {
+            AddCityView(userSettings: userSettings)
         }
     }
     
     var refreshButton: some View {
         Button("Refresh") {
-            fetchWeather()
+            viewModel.refresh()
         }
     }
     
@@ -68,13 +69,18 @@ private extension CitiesView {
                 makeCityView($0)
             }
         }
-        .onAppear(perform: fetchWeather)
         .padding()
     }
     
     func makeCityView(_ currentWeather: CityCurrentWeather) -> some View {
         CityView(currentWeather: currentWeather)
-            .redacted(reason: currentWeather.weather == nil ? .placeholder : [])
+            .contextMenu(ContextMenu(menuItems: {
+                Button(action: {
+                    userSettings.deleteCity(cityName: currentWeather.cityName)
+                }) {
+                    Label("Delete", systemImage: "trash")
+                }
+            }))
     }
     
     var columns: [GridItem] {

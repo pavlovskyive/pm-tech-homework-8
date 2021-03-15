@@ -106,14 +106,16 @@ private extension CityView {
             Spacer()
             footer
         }
+        .redacted(reason: currentWeather.weather == nil ? .placeholder : [])
         // UI
         .foregroundColor(.white)
         .padding(20)
         .background(Color.blue)
         .cornerRadius(10)
+        .contentShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
         .animation(nil)
         // Appearing animation
-        .opacity(redactionReasons == .placeholder ? 0.7 : 1)
+        .opacity(currentWeather.weather == nil ? 0.7 : 1)
         .animation(.easeInOut)
     }
     
@@ -126,11 +128,6 @@ struct CurrentWeatherDetailsView_Previews: PreviewProvider {
     static var previews: some View {
         
         CityView(currentWeather: currentWeatherMock)
-            .frame(width: 200, height: 100, alignment: .center)
-            .redacted(reason: [])
-        
-        CityView(currentWeather: currentWeatherMock)
-            .redacted(reason: .placeholder)
             .frame(width: 200, height: 100, alignment: .center)
     }
 }

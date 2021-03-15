@@ -14,27 +14,46 @@ struct AddCityView: View {
     @ObservedObject
     var userSettings: UserSettings
     
-    @State
-    private var cityName = ""
+    @ObservedObject
+    var viewModel = AddCityViewModel()
 
     var body: some View {
         VStack {
             Spacer()
-            HStack {
-                TextField("Enter cite name", text: $cityName)
+            
+            if (!viewModel.cityName.isEmpty) {
+                CityView(currentWeather: viewModel.currentWeather)
+                    .frame(height: 150)
+                    .padding(.bottom, 20)
+            }
+            
+            VStack {
+                TextField("Enter cite name", text: $viewModel.cityName)
+                    .padding(.top, 10)
                     .padding()
-                Button("Add") {
-                    userSettings.cities.append(cityName)
+                Divider()
+                    
+                Button(action: {
+                    userSettings.addCity(cityName: viewModel.currentWeather.cityName)
                     presentation.wrappedValue.dismiss()
-                }
+                }, label: {
+                    HStack {
+                        Spacer()
+                        Text("Add City")
+                        Spacer()
+                    }
+                })
+                .disabled(viewModel.currentWeather.weather == nil)
                 .padding()
             }
             .padding(.horizontal)
             .background(Color(.systemBackground))
             .cornerRadius(10)
-            
+
             Spacer()
+            
         }
+        .animation(.easeInOut)
         .padding()
         .font(.title3)
         .background(Color(.systemGroupedBackground).edgesIgnoringSafeArea(.all))

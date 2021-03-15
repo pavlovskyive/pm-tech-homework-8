@@ -11,7 +11,7 @@ struct CityCurrentWeather: Identifiable {
     
     let id = UUID()
     
-    let cityName: String
+    var cityName: String
     var weather: CurrentWeather?
     
     init(cityName: String) {
@@ -50,6 +50,7 @@ struct CityCurrentWeather: Identifiable {
 extension CityCurrentWeather {
     
     mutating func configure(with currentWeather: CurrentWeatherResponse) {
+        self.cityName = currentWeather.city
         self.weather = .init(currentWeather: currentWeather)
     }
     
