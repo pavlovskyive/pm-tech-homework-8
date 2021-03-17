@@ -26,7 +26,10 @@ struct CitiesView: View {
     }
 
     var body: some View {
+
         content
+            .navigationBarItems(leading: refreshButton,
+                                trailing: addCityButton)
             .navigationTitle("Current Weather")
     }
 
@@ -39,8 +42,6 @@ private extension CitiesView {
             grid
         }
         .padding(.top, 1)
-        .navigationBarItems(leading: refreshButton,
-                            trailing: addCityButton)
         .sheet(isPresented: $isAddingCity) {
             AddCityView(userSettings: userSettings)
         }
@@ -65,9 +66,8 @@ private extension CitiesView {
 
     var grid: some View {
         LazyVGrid(columns: columns, spacing: 12) {
-            ForEach(userSettings.cities, id: \.self) {
-                cityView(for: $0)
-
+            ForEach(userSettings.cities, id: \.self) { cityName in
+                cityView(for: cityName)
             }
         }
         .padding()
@@ -75,8 +75,14 @@ private extension CitiesView {
 
     func cityView(for cityName: String) -> some View {
 
-        CityView(cityName: cityName,
-                 currentWeather: viewModel.currentWeather[cityName])
+        NavigationLink(
+            destination: ForecastView(cityName: cityName,
+                                      currentWeather: $viewModel.currentWeather[cityName]),
+            label: {
+                CityView(cityName: cityName,
+                         currentWeather: viewModel.currentWeather[cityName])
+            })
+            .buttonStyle(PlainButtonStyle())
             .contextMenu(ContextMenu(menuItems: {
                 Button(action: {
                     // Wait till contenxt menu fully closed.
@@ -88,7 +94,7 @@ private extension CitiesView {
                 }, label: {
                     Label("Delete", systemImage: "trash")
                 })
-            }))
+        }))
     }
 
     var columns: [GridItem] {

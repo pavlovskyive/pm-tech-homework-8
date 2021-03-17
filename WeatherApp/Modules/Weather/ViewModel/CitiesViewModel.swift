@@ -17,13 +17,15 @@ class CitiesViewModel: ObservableObject {
     var userSettings: UserSettings
 
     private let weatherService = WeatherService()
-    private var disposables = Set<AnyCancellable>()
+    private var cancellables = Set<AnyCancellable>()
 
     init(userSettings: UserSettings) {
+
         self.userSettings = userSettings
+
         self.userSettings.$cities
             .sink(receiveValue: fetchCurrentWeather(for:))
-            .store(in: &disposables)
+            .store(in: &cancellables)
     }
 
     func fetchCurrentWeather(for cities: [String]) {
@@ -47,7 +49,7 @@ class CitiesViewModel: ObservableObject {
 
                 self.currentWeather[currentWeather.city] = .init(from: currentWeather)
             })
-            .store(in: &disposables)
+            .store(in: &cancellables)
     }
 
     func refresh() {

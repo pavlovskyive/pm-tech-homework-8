@@ -21,7 +21,11 @@ final class WeatherService {
 extension WeatherService {
 
     func currentWeather(for city: String) -> AnyPublisher<CurrentWeatherResponse, WeatherError> {
-        return fetch(with: makeCurrentWeatherComponents(for: city))
+        fetch(with: makeCurrentWeatherComponents(for: city))
+    }
+
+    func forecast(for city: String) -> AnyPublisher<ForecastResponse, WeatherError> {
+        fetch(with: makeForecastWeatherComponents(for: city))
     }
 
 }
@@ -52,7 +56,8 @@ private extension WeatherService {
     struct OpenWeatherAPI {
         static let key = "ffbcbc836156fd41da6772372c0f4d8b"
         static let host = "api.openweathermap.org"
-        static let currentWeatherComponent = "/data/2.5/weather"
+        static let currentWeatherPath = "/data/2.5/weather"
+        static let forecastWeatherPath = "/data/2.5/forecast"
         static let scheme = "https"
     }
 
@@ -62,7 +67,22 @@ private extension WeatherService {
 
         components.scheme = OpenWeatherAPI.scheme
         components.host = OpenWeatherAPI.host
-        components.path = OpenWeatherAPI.currentWeatherComponent
+        components.path = OpenWeatherAPI.currentWeatherPath
+        components.queryItems = [
+            .init(name: "q", value: city),
+            .init(name: "units", value: "metric"),
+            .init(name: "appid", value: OpenWeatherAPI.key)
+        ]
+
+        return components
+    }
+
+    func makeForecastWeatherComponents(for city: String) -> URLComponents {
+        var components = URLComponents()
+
+        components.scheme = OpenWeatherAPI.scheme
+        components.host = OpenWeatherAPI.host
+        components.path = OpenWeatherAPI.forecastWeatherPath
         components.queryItems = [
             .init(name: "q", value: city),
             .init(name: "units", value: "metric"),

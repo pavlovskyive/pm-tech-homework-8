@@ -54,7 +54,6 @@ class AddCityViewModel: ObservableObject {
                     return
                 }
 
-                print(currentWeatherResponce)
                 self.currentWeather = .init(from: currentWeatherResponce)
             }).store(in: &disposables)
     }

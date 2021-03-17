@@ -12,12 +12,14 @@ class UserSettings: ObservableObject {
 
     @Published
     private(set) var cities: [String] {
+
         willSet {
             objectWillChange.send()
         }
         didSet {
             UserDefaults.standard.setValue(cities, forKey: "cities")
         }
+
     }
 
     init() {

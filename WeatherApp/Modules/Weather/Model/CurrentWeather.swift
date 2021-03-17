@@ -1,5 +1,5 @@
 //
-//  CityCurrentWeather.swift
+//  CurrentWeather.swift
 //  WeatherApp
 //
 //  Created by Vsevolod Pavlovskyi on 14.03.2021.
@@ -16,7 +16,7 @@ struct CurrentWeather {
     let lowestTemperature: Int
 
     let description: String
-    let icon: Image
+    var icon: Image
 
     init(from currentWeather: CurrentWeatherResponse) {
 
@@ -26,14 +26,14 @@ struct CurrentWeather {
         self.highestTemperature = Int(currentWeather.main.highestTemperature)
         self.lowestTemperature = Int(currentWeather.main.lowestTemperature)
 
-        guard let weatherDescription = currentWeather.weather.first else {
+        guard let condition = currentWeather.conditions.first else {
             self.description = ""
-            self.icon = .init(systemName: "sun.max")
+            self.icon = .init(systemName: "sun.min")
 
             return
         }
 
-        self.description = weatherDescription.description
-        self.icon = .init(systemName: "sun.max")
+        description = condition.description
+        icon = IconMapper.image(for: condition.icon)
     }
 }
